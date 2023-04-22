@@ -1,0 +1,22 @@
+{
+    "name": "hiddenpathz/changelog-filler",
+    "description": "Автоматический генератор файла CHANGELOG.md",
+    "type": "library",
+    "version": "0.0.1",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Nebolsin",
+            "email": "dev@dmitry-nebolsin.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "ext-readline": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hiddenpathz\\": ""
+        }
+    }
+}
