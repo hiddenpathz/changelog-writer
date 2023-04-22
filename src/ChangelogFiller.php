@@ -1,6 +1,5 @@
 <?php
-
-namespace changelogfiller\src;
+namespace src;
 
 class ChangelogFiller
 {
