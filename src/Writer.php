@@ -1,18 +1,21 @@
 <?php
-namespace src;
+namespace efko\changelogWriter;
 
-class ChangelogFiller
+class Writer
 {
-    public function _construct()
+    public function __construct(array $arguments = [])
     {
+        $this->isError = false;
+
         $this->bindLastTag();
         $this->bindLastCommit();
+        $this->bindRepoLink($arguments);
     }
 
     /**
      * @var string
      */
-    public $tagLink = '';
+    public $repoLink = '';
 
     /**
      * @var int
@@ -55,6 +58,20 @@ class ChangelogFiller
     private $answerTitle;
 
     /**
+     * @var bool
+     */
+    private $isError;
+
+    /**
+     * @param array $arguments
+     * @return void
+     */
+    private function bindRepoLink(array $arguments): void
+    {
+        $this->repoLink = $arguments[1] ?: getenv('REPOSITORY_LINK');
+    }
+
+    /**
      * @return array
      */
     private function getChangeType(): array
@@ -67,12 +84,26 @@ class ChangelogFiller
         ];
     }
 
+    /**
+     * @return array
+     */
+    private function getChangeTag(): array
+    {
+        return [
+            1 => $this->majorTag + 1 . '.0.0',
+            2 => $this->majorTag . '.' . ($this->minorTag + 1) . '.0',
+            3 => $this->majorTag . '.' . $this->minorTag . '.' . ($this->hotfixTag + 1),
+        ];
+    }
 
     /**
      * @return void
      */
     public function fill(): void
     {
+        if ($this->isError === true) {
+            return;
+        }
 
         $this->printMessage("Текущая версия приложения: " . $this->getLastTag() . "\n", 33);
 
@@ -80,27 +111,14 @@ class ChangelogFiller
 
         $level = trim(fgets(STDIN));
 
-        if (in_array($level, [1, 2, 3]) === false) {
+        if (in_array($level, [1, 2, 3]) === true) {
 
             $this->printMessage("Неизвестное значение.\n", 31);
 
             return;
         }
 
-        switch ($level) {
-            case 1:
-                $this->newTag = $this->majorTag + 1 . '.0.0';
-                break;
-            case 2:
-                $this->newTag = $this->majorTag . '.' . ($this->minorTag + 1) . '.0';
-                break;
-            case 3:
-                $this->newTag = $this->majorTag . '.' . $this->minorTag . '.' . ($this->hotfixTag + 1);
-                break;
-            default:
-                $this->printMessage("Неизвестное значение.\n", 31);
-                return;
-        }
+        $this->newTag = $this->getChangeTag()[$level];
 
         $this->printMessage("Следующая версия приложения: " . $this->newTag . " \n", 32);
 
@@ -115,7 +133,6 @@ class ChangelogFiller
         }
 
         $this->printMessage("Изменения которые попадут в CHANGELOG.md: \n" . $this->answerBody . " \n", 33);
-
 
         $confirmation = readline('Все верно? (y/n): ');
 
@@ -180,8 +197,7 @@ class ChangelogFiller
      */
     private function bindAnswer(): void
     {
-        $this->answerTitle = '## [ [' . $this->newTag . '](' . $this->tagLink . '/-/tags/' .
-            $this->newTag . ') ] - ' .
+        $this->answerTitle = '## [ [' . $this->newTag . '](' . $this->repoLink . '/-/tags/' . $this->newTag . ') ] - ' .
             date('d.m.Y') . PHP_EOL;
 
         $this->answerBody = '';
@@ -201,6 +217,13 @@ class ChangelogFiller
     private function bindLastTag(): void
     {
         exec('git describe --tags $(git rev-list --tags --max-count=1)', $lastTag);
+
+        if (empty($lastTag) === true) {
+
+            $this->printMessage("Отсутствует последний тэг\n", 31);
+            $this->isError = true;
+            return;
+        }
 
         list($this->majorTag, $this->minorTag, $this->hotfixTag) = explode('.', current($lastTag));
     }
