@@ -15,7 +15,7 @@ ChangeLog Writer - это инструмент, который позволяе�
 1. Установите пакет с помощью Composer:
 
    ```bash
-   composer require hiddenpatz/changelog-writer
+   composer require hiddenpathz/changelog-writer
    ```
 
 2. Добавьте в свой ENV файл переменную с ссылкой на ваш репозиторий:
@@ -41,7 +41,7 @@ ChangeLog Writer - это инструмент, который позволяе�
 
    ```json
    "scripts": {
-       "changelog-write": [ "hiddenpatz/changelogWriter/bin http://gitlab.some.ru" ]
+       "changelog-write": [ "hiddenpathz/changelogWriter/bin http://gitlab.some.ru" ]
    }
    ```
 
@@ -58,13 +58,7 @@ ChangeLog Writer - это инструмент, который позволяе�
 * Если вы работаете на сайте, то выполните следующую команду:
 
    ```bash
-   hiddenpatz/changelogWriter/bin http://gitlab.some.ru
-   ```
-
-* Если вы работаете в локальном репозитории, то выполните следующую команду:
-
-   ```bash
-   hiddenpatz/changelogWriter/bin
+   hiddenpathz/changelogWriter/bin http://gitlab.some.ru
    ```
 
 После вызова скрипта файл ChangeLog будет автоматически сгенерирован, с отображением всех изменений.
