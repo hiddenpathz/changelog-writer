@@ -1,5 +1,5 @@
 {
-    "name": "hiddenpatz/changelog-writer",
+    "name": "hiddenpathz/changelog-writer",
     "description": "Автоматический генератор файла CHANGELOG.md",
     "type": "library",
     "version": "1.0.0",
@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "hiddenpatz\\changelogWriter\\": "src/"
+            "hiddenpathz\\changelogWriter\\": "src/"
         }
     }
 }

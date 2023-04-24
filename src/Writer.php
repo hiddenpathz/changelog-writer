@@ -1,5 +1,5 @@
 <?php
-namespace efko\changelogWriter;
+namespace hiddenpathz\changelogWriter;
 
 class Writer
 {

@@ -3,7 +3,7 @@
 
 require_once __DIR__ . '/Writer.php';
 
-use efko\changelogWriter\Writer;
+use hiddenpathz\changelogWriter\Writer;
 
 $app = new Writer($argv);
 
