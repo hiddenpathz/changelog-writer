@@ -1,8 +1,8 @@
 {
-    "name": "hiddenpathz/changelog-filler",
+    "name": "hiddenpatz/changelog-writer",
     "description": "Автоматический генератор файла CHANGELOG.md",
     "type": "library",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "license": "MIT",
     "authors": [
         {
@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Hiddenpathz\\": ""
+            "hiddenpatz\\changelogWriter\\": "src/"
         }
     }
 }

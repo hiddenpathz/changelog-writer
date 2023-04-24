@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/Writer.php';
+
+use efko\changelogWriter\Writer;
+
+$app = new Writer($argv);
+
+$app->fill();
+
+//var_dump($argv);
+exit(0);
