@@ -9,5 +9,4 @@ $app = new Writer($argv);
 
 $app->fill();
 
-//var_dump($argv);
 exit(0);

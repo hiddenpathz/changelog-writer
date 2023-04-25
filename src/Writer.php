@@ -67,8 +67,17 @@ class Writer
      * @return void
      */
     private function bindRepoLink(array $arguments): void
-    {
-        $this->repoLink = $arguments[1] ?: getenv('REPOSITORY_LINK');
+    {var_dump(isset($arguments[1]));
+        if (isset($arguments[1]) === true) {
+
+            $this->repoLink  = $arguments[1];
+
+            return;
+        }
+
+        preg_match('/REPOSITORY_LINK=(\S+)/', file_get_contents('./.env'), $matches);
+
+        $this->repoLink = $matches[1];
     }
 
     /**
@@ -111,7 +120,7 @@ class Writer
 
         $level = trim(fgets(STDIN));
 
-        if (in_array($level, [1, 2, 3]) === true) {
+        if (in_array($level, ['major', 'minor', 'fix']) === true) {
 
             $this->printMessage("Неизвестное значение.\n", 31);
 
@@ -134,6 +143,16 @@ class Writer
 
         $this->printMessage("Изменения которые попадут в CHANGELOG.md: \n" . $this->answerBody . " \n", 33);
 
+
+        $this->createSign();
+        $this->createCommit();
+    }
+
+    /**
+     * @return void
+     */
+    private function createSign(): void
+    {
         $confirmation = readline('Все верно? (y/n): ');
 
         if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
@@ -153,6 +172,45 @@ class Writer
         }
 
         $this->printMessage("Файл CHANGELOG.md успешно отредактирован:  \n", 32);
+    }
+
+    /**
+     * @return void
+     */
+    private function createCommit(): void
+    {
+        $confirmation = readline('Создать коммит? (y/n): ');
+
+        if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
+
+            $this->printMessage("Создание коммита отменено\n", 33);
+
+            return;
+        }
+
+        try {
+
+            $this->commit();
+
+        } catch (\Throwable $e) {
+
+            $this->printMessage("Во время создания коммита произошла ошибка. Причина: " . $e->getMessage() . "\n", 31);
+        }
+
+        $this->printMessage("Коммит успешно создан!  \n", 32);
+    }
+
+    /**
+     * @return void
+     */
+    private function commit(): void
+    {
+        $commands = [
+            'git add ./CHANGELOG.md',
+            "git commit -m 'Отредактирован CHANGELOG.md'"
+        ];
+
+        exec(implode(' && ', $commands));
     }
 
     /**
@@ -216,7 +274,13 @@ class Writer
      */
     private function bindLastTag(): void
     {
-        exec('git describe --tags $(git rev-list --tags --max-count=1)', $lastTag);
+        $commands = [
+            'git config --global --add safe.directory /app',
+            "git config --global core.pager 'less --raw-control-chars'",
+            'git describe --tags $(git rev-list --tags --max-count=1)'
+        ];
+
+        exec(implode(' && ', $commands), $lastTag);
 
         if (empty($lastTag) === true) {
 
@@ -252,7 +316,7 @@ class Writer
     private function getChanges(): array
     {
         $commands = [
-            'git log --pretty=format:"%h|%an|%s|%cs" --no-merges ' . $this->getLastTag() . '..develop',
+            'git log --pretty=format:"%h|%an|%s|%cs" --no-merges ' . $this->getLastTag() . '..feature/YMS-IT813056-VT496243-add-changelog-automatization',
             'git cherry -v ' . $this->masterCommit . ' ' . $this->getLastTag(),
         ];
 
