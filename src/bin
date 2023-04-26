@@ -7,6 +7,6 @@ use hiddenpathz\changelogWriter\Writer;
 
 $app = new Writer($argv);
 
-$app->fill();
+$app->handle();
 
 exit(0);
