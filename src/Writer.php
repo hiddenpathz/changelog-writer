@@ -1,6 +1,8 @@
 <?php
 namespace hiddenpathz\changelogWriter;
 
+use Exception;
+
 class Writer
 {
     public function __construct(array $arguments = [])
@@ -16,6 +18,11 @@ class Writer
      * @var string
      */
     public $repoLink = '';
+
+    /**
+     * @var string
+     */
+    public $branchName = '';
 
     /**
      * @var int
@@ -67,7 +74,7 @@ class Writer
      * @return void
      */
     private function bindRepoLink(array $arguments): void
-    {var_dump(isset($arguments[1]));
+    {
         if (isset($arguments[1]) === true) {
 
             $this->repoLink  = $arguments[1];
@@ -77,7 +84,29 @@ class Writer
 
         preg_match('/REPOSITORY_LINK=(\S+)/', file_get_contents('./.env'), $matches);
 
-        $this->repoLink = $matches[1];
+        $this->repoLink = empty($matches) === false ? $matches[1] : 'http://';
+    }
+
+    /**
+     * @return void
+     */
+    public function handle(): void
+    {
+        try {
+            $this->beforeChange();
+
+            $this->fill();
+            $this->createSign();
+            $this->createCommit();
+
+            $this->afterChange();
+
+        } catch (\Exception $e) {
+
+            $this->printMessage("Ошибка: " . $e->getMessage() . "\n", 31);
+
+            return;
+        }
     }
 
     /**
@@ -107,8 +136,9 @@ class Writer
 
     /**
      * @return void
+     * @throws Exception
      */
-    public function fill(): void
+    private function fill(): void
     {
         if ($this->isError === true) {
             return;
@@ -122,9 +152,8 @@ class Writer
 
         if (in_array($level, ['major', 'minor', 'fix']) === true) {
 
-            $this->printMessage("Неизвестное значение.\n", 31);
+            throw new Exception('Неизвестное значение');
 
-            return;
         }
 
         $this->newTag = $this->getChangeTag()[$level];
@@ -136,20 +165,16 @@ class Writer
 
         if (empty($this->answerBody) === true) {
 
-            $this->printMessage("Отсутствуют коммиты с нужными тэгами \n", 31);
-
-            return;
+            throw new Exception('Отсутствуют коммиты с нужными тэгами');
         }
 
         $this->printMessage("Изменения которые попадут в CHANGELOG.md: \n" . $this->answerBody . " \n", 33);
 
-
-        $this->createSign();
-        $this->createCommit();
     }
 
     /**
      * @return void
+     * @throws Exception
      */
     private function createSign(): void
     {
@@ -157,9 +182,7 @@ class Writer
 
         if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
 
-            $this->printMessage("Выполнение команды отменено\n", 31);
-
-            return;
+            throw new Exception('Выполнение команды отменено');
         }
 
         try {
@@ -255,7 +278,7 @@ class Writer
      */
     private function bindAnswer(): void
     {
-        $this->answerTitle = '## [ [' . $this->newTag . '](' . $this->repoLink . '/-/tags/' . $this->newTag . ') ] - ' .
+        $this->answerTitle = '## [ [' . $this->newTag . '](' . $this->repoLink . $this->newTag . ') ] - ' .
             date('d.m.Y') . PHP_EOL;
 
         $this->answerBody = '';
@@ -335,4 +358,80 @@ class Writer
         fwrite(\STDOUT, "\033[01;" . $color . "m" . $message . "\033[0m");
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function beforeChange(): void
+    {
+        $this->generateBranchName();
+        $this->createBranch();
+
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function afterChange(): void
+    {
+        $this->pushChanges();
+        $this->deleteBranch();
+    }
+
+    /**
+     * @return void
+     */
+    private function generateBranchName()
+    {
+        preg_match('/BRANCH_PREFIX=(\S+)/', file_get_contents('./.env'), $matches);
+
+        $prefix = empty($matches) === false ? $matches[1] . '-' : '';
+
+        $this->branchName = 'hotfix/' . $prefix . date('dmY').'-assign-to-changelog';
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function createBranch()
+    {
+        $commands = [
+            'git checkout develop',
+            'git checkout -b ' . $this->branchName,
+        ];
+
+        system(implode(' && ', $commands), $result);
+
+        if ($result !== 0) {
+            throw new Exception('Не удалось выполнить создание ветки');
+        }
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function pushChanges()
+    {
+        system('git push' . $this->branchName, $result);
+
+        if ($result !== 0) {
+            throw new Exception('Не удалось push');
+        }
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    private function deleteBranch()
+    {
+        system('git branch -D ' . $this->branchName, $result);
+
+        if ($result !== 0) {
+            throw new Exception('Не удалось выполнить удаление ветки');
+        }
+    }
 }
