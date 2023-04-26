@@ -6,7 +6,6 @@ ChangeLog Writer - это инструмент, который позволяе�
 
 Для работы ChangeLog Writer требуется PHP версии 7.3.0 и выше.
 
-
 В приложении:
 
 Контроль версий GIT ветки Develop и Master
@@ -19,12 +18,12 @@ ChangeLog Writer - это инструмент, который позволяе�
 1. Установите пакет с помощью Composer:
 
    ```bash
-   composer require --global hiddenpathz/changelog-writer
+   composer global require hiddenpathz/changelog-writer
    ```
 2. Добавим ссылку в систему
 
    ```bash
-   sudo ln -s ~/ /usr/bin/changeloger
+   sudo ln -s ~/.config/composer/vendor/hiddenpathz/changelog-writer/src/bin /usr/bin/changeloger
    ```
    
 3. Changeloger готов к работе. Находясь в папке своего проекта достаточно вызвать его по ссылке которую создали.
