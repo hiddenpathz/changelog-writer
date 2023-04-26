@@ -316,7 +316,7 @@ class Writer
     private function getChanges(): array
     {
         $commands = [
-            'git log --pretty=format:"%h|%an|%s|%cs" --no-merges ' . $this->getLastTag() . '..feature/YMS-IT813056-VT496243-add-changelog-automatization',
+            'git log --pretty=format:"%h|%an|%s|%cs" --no-merges ' . $this->getLastTag() . '..develop',
             'git cherry -v ' . $this->masterCommit . ' ' . $this->getLastTag(),
         ];
 
