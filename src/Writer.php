@@ -178,12 +178,7 @@ class Writer
      */
     private function createSign(): void
     {
-        $confirmation = readline('Все верно? (y/n): ');
-
-        if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
-
-            throw new Exception('Выполнение команды отменено');
-        }
+        $this->question('Все верно?');
 
         try {
 
@@ -202,14 +197,7 @@ class Writer
      */
     private function createCommit(): void
     {
-        $confirmation = readline('Создать коммит? (y/n): ');
-
-        if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
-
-            $this->printMessage("Создание коммита отменено\n", 33);
-
-            return;
-        }
+        $this->question('Создать коммит?');
 
         try {
 
@@ -365,6 +353,9 @@ class Writer
     public function beforeChange(): void
     {
         $this->generateBranchName();
+
+        $this->question('Создать ветку ' . $this->branchName . '?');
+
         $this->createBranch();
 
     }
@@ -375,6 +366,7 @@ class Writer
      */
     public function afterChange(): void
     {
+        $this->question('Пушить ветку ' . $this->branchName . '?');
         $this->pushChanges();
         $this->deleteBranch();
     }
@@ -415,10 +407,10 @@ class Writer
      */
     private function pushChanges()
     {
-        system('git push' . $this->branchName, $result);
+        system('git push origin ' . $this->branchName, $result);
 
         if ($result !== 0) {
-            throw new Exception('Не удалось push');
+            throw new Exception('Не удалось выполнить push');
         }
     }
 
@@ -432,6 +424,21 @@ class Writer
 
         if ($result !== 0) {
             throw new Exception('Не удалось выполнить удаление ветки');
+        }
+    }
+
+    /**
+     * @param string $question
+     * @return void
+     * @throws Exception
+     */
+    private function question(string $question): void
+    {
+        $confirmation = readline($question . ' (y/n): ');
+
+        if (strtolower($confirmation) !== 'yes' && strtolower($confirmation) !== 'y') {
+
+            throw new Exception('Выполнение команды отменено');
         }
     }
 }
