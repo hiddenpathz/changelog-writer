@@ -36,7 +36,7 @@ ChangeLog Writer - это инструмент, который позволяе�
 * префикс ветки (опционально, зависит от правил):
 
    ```bash
-   REPOSITORY_LINK=https://github.com/hiddenpathz/changelog-writer/releases/tag/
+   REPOSITORY_LINK=https://gitlab.some.ru/your.repo.ru//-/tags/
    BRANCH_PREFIX=MYPROJECT
    ```
 
@@ -44,7 +44,11 @@ ChangeLog Writer - это инструмент, который позволяе�
 
    ```bash
    changeloger
+   
+   changeloger https://gitlab.some.ru/your.repo.ru//-/tags/
    ```
+
+В случае указания пути в атрибуте, именно он будет использован в файле.
 
 ## Использование
 
