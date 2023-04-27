@@ -353,11 +353,7 @@ class Writer
     public function beforeChange(): void
     {
         $this->generateBranchName();
-
-        $this->question('Создать ветку ' . $this->branchName . '?');
-
         $this->createBranch();
-
     }
 
     /**
@@ -389,6 +385,17 @@ class Writer
      */
     private function createBranch()
     {
+        exec('git branch --list w' . $this->branchName,$output);
+
+        if ($output !== false) {
+
+            $this->printMessage("Нужная ветка уже существует! Создавать не нужно  \n", 32);
+
+            system('git checkout ' . $this->branchName, $result);
+
+            return;
+        }
+
         $commands = [
             'git checkout develop',
             'git checkout -b ' . $this->branchName,
