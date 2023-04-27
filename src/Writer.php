@@ -194,6 +194,7 @@ class Writer
 
     /**
      * @return void
+     * @throws Exception
      */
     private function createCommit(): void
     {
