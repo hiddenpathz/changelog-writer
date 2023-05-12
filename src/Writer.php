@@ -231,14 +231,16 @@ class Writer
     public function print(): void
     {
         $filePath = './CHANGELOG.md';
-        $title = "# История изменений\n\n";
 
         $content = file_get_contents($filePath);
-        $content = preg_replace('/^' . $title . '/', '', $content);
 
-        $newLine = $title . $this->answerTitle . $this->answerBody . "\n";
+        $pos = strpos($content, '## [');
 
-        file_put_contents($filePath, $newLine . $content);
+        $insertStr = $this->answerTitle . $this->answerBody;
+
+        $newData = substr_replace($content, "{$insertStr}\n", $pos, 0);
+
+        file_put_contents($filePath, $newData);
     }
 
     /**
@@ -275,6 +277,7 @@ class Writer
         foreach ($this->changes as $key => $type) {
 
             $this->answerBody .= '- ' . $key . ':' . PHP_EOL;
+
             foreach ($type as $elem) {
                 $this->answerBody .= "  - " . $elem . PHP_EOL;
             }
@@ -287,8 +290,6 @@ class Writer
     private function bindLastTag(): void
     {
         $commands = [
-            'git config --global --add safe.directory /app',
-            "git config --global core.pager 'less --raw-control-chars'",
             'git describe --tags $(git rev-list --tags --max-count=1)'
         ];
 
@@ -386,9 +387,9 @@ class Writer
      */
     private function createBranch()
     {
-        exec('git branch --list w' . $this->branchName,$output);
+        system('git branch --list w' . $this->branchName, $result);
 
-        if ($output !== false) {
+        if ($result !== false) {
 
             $this->printMessage("Нужная ветка уже существует! Создавать не нужно  \n", 32);
 
