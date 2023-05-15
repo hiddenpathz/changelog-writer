@@ -387,9 +387,9 @@ class Writer
      */
     private function createBranch()
     {
-        exec('git branch --list w' . $this->branchName, $result);
+        exec('git branch --list w ' . $this->branchName, $result);
 
-        if ($result !== false) {
+        if (count($result) > 0) {
 
             $this->printMessage("Нужная ветка уже существует! Создавать не нужно  \n", 32);
 
