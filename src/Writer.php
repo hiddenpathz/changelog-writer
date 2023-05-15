@@ -387,7 +387,7 @@ class Writer
      */
     private function createBranch()
     {
-        system('git branch --list w' . $this->branchName, $result);
+        exec('git branch --list w' . $this->branchName, $result);
 
         if ($result !== false) {
 
