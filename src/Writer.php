@@ -429,7 +429,12 @@ class Writer
      */
     private function deleteBranch()
     {
-        system('git branch -D ' . $this->branchName, $result);
+        $commands = [
+            'git checkout develop',
+            'git branch -D ' . $this->branchName,
+        ];
+
+        system(implode(' && ', $commands), $result);
 
         if ($result !== 0) {
             throw new Exception('Не удалось выполнить удаление ветки');
