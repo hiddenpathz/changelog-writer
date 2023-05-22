@@ -270,7 +270,7 @@ class Writer
     private function bindAnswer(): void
     {
         $this->answerTitle = '## [ [' . $this->newTag . '](' . $this->repoLink . $this->newTag . ') ] - ' .
-            date('d.m.Y') . PHP_EOL;
+            date('d.m.Y') . PHP_EOL . PHP_EOL;
 
         $this->answerBody = '';
 
