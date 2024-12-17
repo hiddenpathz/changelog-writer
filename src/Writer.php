@@ -9,15 +9,22 @@ class Writer
     {
         $this->isError = false;
 
+        $this->checkEnvFile();
         $this->bindLastTag();
         $this->bindLastCommit();
         $this->bindRepoLink($arguments);
+        $this->bindChangelogPath();
     }
 
     /**
      * @var string
      */
     public $repoLink = '';
+
+    /**
+     * @var string
+     */
+    public $changelogPath = '';
 
     /**
      * @var string
@@ -70,6 +77,20 @@ class Writer
     private $isError;
 
     /**
+     * @return void
+     */
+    private function checkEnvFile(): void
+    {
+        $filePath = __DIR__ . '/.env';
+
+        if (file_exists($filePath) === false) {
+
+            $this->printMessage("Файл .env не существует." . "\n", 31);
+            die;
+        }
+    }
+
+    /**
      * @param array $arguments
      * @return void
      */
@@ -85,6 +106,17 @@ class Writer
         preg_match('/REPOSITORY_LINK=(\S+)/', file_get_contents('./.env'), $matches);
 
         $this->repoLink = empty($matches) === false ? $matches[1] : 'http://';
+    }
+
+    /**
+     * @param array $arguments
+     * @return void
+     */
+    private function bindChangelogPath(): void
+    {
+        preg_match('/CHANGELOG_PATH=(\S+)/', file_get_contents('./.env'), $matches);
+
+        $this->changelogPath = empty($matches) === false ? $matches[1] : './CHANGELOG.md';
     }
 
     /**
@@ -218,7 +250,7 @@ class Writer
     private function commit(): void
     {
         $commands = [
-            'git add ./CHANGELOG.md',
+            'git add ' . $this->changelogPath,
             "git commit -m 'Отредактирован CHANGELOG.md'"
         ];
 
@@ -230,9 +262,7 @@ class Writer
      */
     public function print(): void
     {
-        $filePath = './CHANGELOG.md';
-
-        $content = file_get_contents($filePath);
+        $content = file_get_contents($this->changelogPath);
 
         $pos = strpos($content, '## [');
 
@@ -240,7 +270,7 @@ class Writer
 
         $newData = substr_replace($content, "{$insertStr}\n", $pos, 0);
 
-        file_put_contents($filePath, $newData);
+        file_put_contents($this->changelogPath, $newData);
     }
 
     /**
