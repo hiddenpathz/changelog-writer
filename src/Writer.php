@@ -81,7 +81,7 @@ class Writer
      */
     private function checkEnvFile(): void
     {
-        $filePath = __DIR__ . '/.env';
+        $filePath = './.env';
 
         if (file_exists($filePath) === false) {
 
