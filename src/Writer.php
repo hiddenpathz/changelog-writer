@@ -408,7 +408,7 @@ class Writer
 
         $prefix = empty($matches) === false ? $matches[1] . '-' : '';
 
-        $this->branchName = 'hotfix/' . $prefix . date('dmY').'-assign-to-changelog';
+        $this->branchName = 'hotfix/' . $prefix . date('Ymd').'-assign-to-changelog';
     }
 
     /**
