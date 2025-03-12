@@ -251,7 +251,7 @@ class Writer
     {
         $commands = [
             'git add ' . $this->changelogPath,
-            "git commit -m 'Отредактирован CHANGELOG.md'"
+            "git commit -m 'wip: Отредактирован CHANGELOG.md'"
         ];
 
         exec(implode(' && ', $commands));
@@ -285,6 +285,10 @@ class Writer
             preg_match("/\[(.*)]\s(\w+):\s(.*)/", $message, $matches);
 
             if (empty($matches) === true) {
+                continue;
+            }
+
+            if (isset($matches[2]) === false || array_key_exists($matches[2], $this->getChangeType()) === false) {
                 continue;
             }
 
