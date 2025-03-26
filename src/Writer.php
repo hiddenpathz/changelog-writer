@@ -292,10 +292,57 @@ class Writer
                 continue;
             }
 
-            $this->changes[$this->getChangeType()[$matches[2]]][] = trim($matches[3]);
+            $taskCode = $this->extractTaskCode($matches[1]);
+            $description = trim($matches[3]);
+
+            $taskLink = $this->getTaskLink($taskCode);
+            $taskSystemName = $this->getTaskSystemName();
+
+            if ($taskCode !== null && $taskLink !== '' && $taskSystemName !== '') {
+                $description .= ' [Заявка ' . $taskSystemName . '](' . $taskLink . ')';
+            }
+
+            $this->changes[$this->getChangeType()[$matches[2]]][] = $description;
         }
 
         $this->bindAnswer();
+    }
+
+    /**
+     * @param  string  $code
+     * @return string
+     */
+    private function getTaskLink(string $code): string
+    {
+        if (preg_match('/TASK_SYSTEM=(\S+)/', file_get_contents('./.env'), $matches) === false) {
+            return '';
+        }
+
+        $baseUrl = rtrim($matches[1], '/');
+
+        return $baseUrl . $code;
+    }
+
+    private function getTaskSystemName(): string
+    {
+        if (preg_match('/TASK_SYSTEM_NAME=(\S+)/', file_get_contents('./.env'), $matches) === false) {
+            return '';
+        }
+
+        return $matches[1];
+    }
+
+    /**
+     * @param  string  $raw
+     * @return string|null
+     */
+    private function extractTaskCode(string $raw): ?string
+    {
+        if (preg_match('/[A-Z]{2,}\d{6,}/', $raw, $matches) !== false) {
+            return $matches[0];
+        }
+
+        return null;
     }
 
     /**
