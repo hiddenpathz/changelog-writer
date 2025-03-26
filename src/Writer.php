@@ -291,15 +291,17 @@ class Writer
             if (isset($matches[2]) === false || array_key_exists($matches[2], $this->getChangeType()) === false) {
                 continue;
             }
-
-            $taskCode = $this->extractTaskCode($matches[1]);
             $description = trim($matches[3]);
 
-            $taskLink = $this->getTaskLink($taskCode);
-            $taskSystemName = $this->getTaskSystemName();
+            if ($matches[1] !== null) {
+                $taskCode = $this->extractTaskCode($matches[1]);
 
-            if ($taskCode !== null && $taskLink !== '' && $taskSystemName !== '') {
-                $description .= ' [Заявка ' . $taskSystemName . '](' . $taskLink . ')';
+                $taskLink = $this->getTaskLink($taskCode);
+                $taskSystemName = $this->getTaskSystemName();
+
+                if ($taskCode !== null && $taskLink !== '' && $taskSystemName !== '') {
+                    $description .= ' [Заявка ' . $taskSystemName . '](' . $taskLink . ')';
+                }
             }
 
             $this->changes[$this->getChangeType()[$matches[2]]][] = $description;
@@ -336,7 +338,7 @@ class Writer
      * @param  string  $raw
      * @return string|null
      */
-    private function extractTaskCode(string $raw): ?string
+    private function extractTaskCode(?string $raw): ?string
     {
         if (preg_match('/[A-Z]{2,}\d{6,}/', $raw, $matches) !== false) {
             return $matches[0];
