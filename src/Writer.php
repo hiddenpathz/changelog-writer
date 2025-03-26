@@ -293,13 +293,15 @@ class Writer
             }
             $description = trim($matches[3]);
 
-            if ($matches[1] !== null) {
-                $taskCode = $this->extractTaskCode($matches[1]);
+
+            $taskCode = $this->extractTaskCode($matches[1]);
+
+            if ($taskCode !== null) {
 
                 $taskLink = $this->getTaskLink($taskCode);
                 $taskSystemName = $this->getTaskSystemName();
 
-                if ($taskCode !== null && $taskLink !== '' && $taskSystemName !== '') {
+                if ($taskLink !== '' && $taskSystemName !== '') {
                     $description .= ' [Заявка ' . $taskSystemName . '](' . $taskLink . ')';
                 }
             }
