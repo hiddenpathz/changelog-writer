@@ -406,13 +406,24 @@ class Writer
     /**
      * @return void
      */
-    private function generateBranchName()
+    private function generateBranchName(): void
     {
         preg_match('/BRANCH_PREFIX=(\S+)/', file_get_contents('./.env'), $matches);
 
         $prefix = empty($matches) === false ? $matches[1] . '-' : '';
 
-        $this->branchName = 'hotfix/' . $prefix . date('Ymd').'-assign-to-changelog';
+        $this->printMessage('Введите номер заявки и задачи (в формате Заявка-Задача, например "IU888000-W0999000"): ', 33);
+
+        $input = trim(fgets(STDIN));
+
+        if ((bool)preg_match('/^[A-Z]+\d+-[A-Z]+\d+$/i', $input) === false) {
+
+            $this->printMessage('Неверный формат. Ожидался формат Заявка-Задача, например "IU888000-W0999000": '. "\n", 31);
+
+            exit(1);
+        }
+
+        $this->branchName = 'feature/' . $prefix . $input . '-assign-to-changelog';
     }
 
     /**
