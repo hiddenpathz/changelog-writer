@@ -113,7 +113,7 @@ ChangeLog Writer - это инструмент, который позволяе�
 * Если добавить переменные для поставщика задач `TASK_SYSTEM_NAME` и `TASK_SYSTEM_LINK`.
 
    ```bash
-   refactor: Rewrite order method [Заявка SomeTaskSystemName](https://some-task-system.ru/tasks/view?code=)
+   refactor: Rewrite order method [Заявка SomeTaskSystemName](https://some-task-system.ru/tasks/view?code=IU000000)
    ```
 
 
