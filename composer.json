@@ -2,7 +2,7 @@
     "name": "hiddenpathz/changelog-writer",
     "description": "Автоматический генератор файла CHANGELOG.md",
     "type": "library",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "license": "MIT",
     "authors": [
         {

@@ -291,13 +291,12 @@ class Writer
             if (isset($matches[2]) === false || array_key_exists($matches[2], $this->getChangeType()) === false) {
                 continue;
             }
-            $description = trim($matches[3]);
 
+            $description = isset($matches[3]) ? trim($matches[3]) : '';
 
-            $taskCode = $this->extractTaskCode($matches[1]);
+            $taskCode = isset($matches[1]) ? $this->extractTaskCode($matches[1]) : null;
 
             if ($taskCode !== null) {
-
                 $taskLink = $this->getTaskLink($taskCode);
                 $taskSystemName = $this->getTaskSystemName();
 
@@ -318,18 +317,25 @@ class Writer
      */
     private function getTaskLink(string $code): string
     {
-        if (preg_match('/TASK_SYSTEM=(\S+)/', file_get_contents('./.env'), $matches) === false) {
+        preg_match('/TASK_SYSTEM_LINK=(\S+)/', file_get_contents('./.env'), $matches);
+
+        if (empty($matches) || array_key_exists(1, $matches) === false) {
             return '';
         }
 
         $baseUrl = rtrim($matches[1], '/');
 
-        return $baseUrl . $code;
+        return $baseUrl . '/tasks/view?code=' . urlencode($code);
     }
 
+    /**
+     * @return string
+     */
     private function getTaskSystemName(): string
     {
-        if (preg_match('/TASK_SYSTEM_NAME=(\S+)/', file_get_contents('./.env'), $matches) === false) {
+        preg_match('/TASK_SYSTEM_NAME=(\S+)/', file_get_contents('./.env'), $matches);
+
+        if (empty($matches) || array_key_exists(1, $matches) === false) {
             return '';
         }
 
@@ -337,16 +343,22 @@ class Writer
     }
 
     /**
-     * @param  string  $raw
+     * @param  string|null  $raw
      * @return string|null
      */
     private function extractTaskCode(?string $raw): ?string
     {
-        if (preg_match('/[A-Z]{2,}\d{6,}/', $raw, $matches) !== false) {
-            return $matches[0];
+        if ($raw === null) {
+            return null;
         }
 
-        return null;
+        preg_match('/[A-Z]{2,}\d{6,}/', $raw, $matches);
+
+        if (empty($matches) || array_key_exists(0, $matches) === false) {
+            return null;
+        }
+
+        return $matches[0];
     }
 
     /**
