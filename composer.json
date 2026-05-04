@@ -2,7 +2,7 @@
     "name": "hiddenpathz/changelog-writer",
     "description": "Автоматический генератор файла CHANGELOG.md",
     "type": "library",
-    "version": "1.4.4",
+    "version": "1.4.5",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,11 @@
     ],
     "require": {
         "php": ">=7.3",
-        "ext-readline": "*"
+        "ext-readline": "*",
+        "ext-mbstring": "*"
+    },
+    "scripts": {
+        "test": "php tests/WriterTest.php"
     },
     "autoload": {
         "psr-4": {
