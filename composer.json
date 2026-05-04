@@ -12,11 +12,7 @@
     ],
     "require": {
         "php": ">=7.3",
-        "ext-readline": "*",
-        "ext-mbstring": "*"
-    },
-    "scripts": {
-        "test": "php tests/WriterTest.php"
+        "ext-readline": "*"
     },
     "autoload": {
         "psr-4": {
