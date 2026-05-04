@@ -292,7 +292,7 @@ class Writer
                 continue;
             }
 
-            $description = isset($matches[3]) ? trim($matches[3]) : '';
+            $description = isset($matches[3]) ? $this->normalizeDescription(trim($matches[3])) : '';
 
             $taskCode = isset($matches[1]) ? $this->extractTaskCode($matches[1]) : null;
 
@@ -309,6 +309,16 @@ class Writer
         }
 
         $this->bindAnswer();
+    }
+
+    /**
+     * @param string $description
+     * @return string
+     */
+    private function normalizeDescription(string $description): string
+    {
+        return mb_strtoupper(mb_substr($description, 0, 1, 'UTF-8'), 'UTF-8') .
+            mb_substr($description, 1, null, 'UTF-8');
     }
 
     /**
