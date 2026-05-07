@@ -381,11 +381,14 @@ class Writer
 
         $this->answerBody = '';
 
-        foreach ($this->changes as $key => $type) {
+        foreach ($this->getChangeType() as $type) {
+            if (array_key_exists($type, $this->changes) === false) {
+                continue;
+            }
 
-            $this->answerBody .= '- ' . $key . ':' . PHP_EOL;
+            $this->answerBody .= '- ' . $type . ':' . PHP_EOL;
 
-            foreach ($type as $elem) {
+            foreach ($this->changes[$type] as $elem) {
                 $this->answerBody .= "  - " . $elem . PHP_EOL;
             }
         }
